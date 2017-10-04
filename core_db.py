@@ -36,6 +36,9 @@ class CoreDB:
         #обновление записи по ID
         return
 
-    def select(self, sql_string):
-
+    def select_data(self, sql_string):
+        self.conn = self.connect_db()[0]
+        self.cur = self.connect_db()[1]
+        self.select_result = self.cur.execute(sql_string).fetchall()
+        self.conn.close()
         return self.select_result
