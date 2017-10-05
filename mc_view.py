@@ -10,8 +10,8 @@ class MCView(QWidget):
     def __init__(self):
         super().__init__()
         self.title = 'Учет техники'
-        self.left = 0
-        self.top = 0
+        self.left = 500
+        self.top = 300
         self.width = 300
         self.height = 200
         self.initUI()
@@ -53,8 +53,8 @@ class MCView(QWidget):
         self.max_oper = len(self.list_oper)
         self.tableWidget.setRowCount(len(self.list_oper))
         self.tableWidget.setColumnCount(2)
-        for i in self.list_oper:
-            self.tableWidget.setItem(self.list_oper.index(i)-1, 0, QTableWidgetItem(i[self.list_oper.index(i)-1][0]))
-            self.tableWidget.setItem(self.list_oper.index(i)-1, 1, QTableWidgetItem(i[self.list_oper.index(i)-1][1]))
+        for i, item in enumerate(self.list_oper):
+            self.tableWidget.setItem(i, 0, QTableWidgetItem(self.list_oper[i][0]))
+            self.tableWidget.setItem(i, 1, QTableWidgetItem(str(self.list_oper[i][1])))
 
         self.tableWidget.move(0, 0)
