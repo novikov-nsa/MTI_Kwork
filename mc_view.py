@@ -1,12 +1,16 @@
 import sys
 from PyQt5.QtWidgets import (QWidget, QToolTip, QPushButton, QApplication, QMessageBox, QDesktopWidget, \
-                             QTableWidget, QTableWidgetItem, QMainWindow, QAction, QVBoxLayout)
+                             QTableWidget, QTableWidgetItem, QMainWindow, QAction, QVBoxLayout, \
+                             QLabel, QLineEdit, QTextEdit, QGridLayout)
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtCore import pyqtSlot
+from PyQt5 import Qt as qt
+from PyQt5 import QtGui
 from mc_model import Operation
+from mc_view_edit import MCViewEdit
 
-class MCView(QWidget):
+class MCMainView(QWidget):
     def __init__(self):
         super().__init__()
         self.title = 'Учет техники'
@@ -58,3 +62,15 @@ class MCView(QWidget):
             self.tableWidget.setItem(i, 1, QTableWidgetItem(str(self.list_oper[i][1])))
 
         self.tableWidget.move(0, 0)
+        self.tableWidget.doubleClicked.connect(self.on_double_click)
+
+    @pyqtSlot()
+    def on_double_click(self):
+        print("\n")
+        for currentQTableWidgetItem in self.tableWidget.selectedItems():
+            print(currentQTableWidgetItem.row(), currentQTableWidgetItem.column(), currentQTableWidgetItem.text())
+        modal_window = MCViewEdit()
+        modal_window.show()
+
+
+

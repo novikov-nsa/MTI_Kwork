@@ -1,7 +1,7 @@
 '''Основной модуль'''
 import sys
 from core_db import CoreDB
-from mc_view import MCView
+from mc_view import MCMainView
 from PyQt5.QtWidgets import QApplication
 
 db = CoreDB()
@@ -10,7 +10,7 @@ db.check_tables()
 if __name__ == '__main__':
 
     app = QApplication(sys.argv)
-    ex = MCView()
+    ex = MCMainView()
     sys.exit(app.exec_())
 
 
