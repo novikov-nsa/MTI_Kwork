@@ -2,8 +2,7 @@
 import sqlite3
 
 class CoreDB:
-    list_fields = {'mc_operation': 'CREATE TABLE mc_operation (f1 text, f2 number)', \
-                        'mc_item': 'CREATE TABLE mc_item (f21 text, f22 text)'}
+    list_fields = {'mc_cards': 'CREATE TABLE mc_cards (f1 text, f2 text, f3 text, f4 text)'}
     def connect_db(self):
         self.conn = sqlite3.connect("manage_comp.db")
         self.cur = self.conn.cursor()

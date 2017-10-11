@@ -16,7 +16,7 @@ class MCMainView(QWidget):
         self.title = 'Учет техники'
         self.left = 500
         self.top = 300
-        self.width = 300
+        self.width = 600
         self.height = 200
         self.initUI()
 
