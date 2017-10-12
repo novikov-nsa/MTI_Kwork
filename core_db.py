@@ -19,12 +19,17 @@ class CoreDB:
             if len(self.s_result) == 0:
                 self._cur.execute(self.list_fields[i])
         return
+
     def insert_data(self, table_name, fields_list, fields_value_list):
+        '''имя таблицы - строка, передается имя таблицы, в которую будет вставлена запись
+        список полей- строка, передается строка со списков полей в виде "поле1, поле2, поле3"
+        список значение- строка передается список значений в виде 'значение 1', 'значение 2', 'значение 3' '''
         self.conn = self.connect_db()[0]
         self.cur = self.connect_db()[1]
         self.result_comand = """INSERT INTO """+table_name+""" ("""+fields_list+""") VALUES ("""+fields_value_list+""")"""
         self.cur.execute(self.result_comand)
         self.conn.commit()
+        self.conn.close()
         return
 
     def delete_item(self, table_name, id_value):

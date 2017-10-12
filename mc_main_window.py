@@ -33,16 +33,19 @@ class MCMainWindow(QtWidgets.QMainWindow):
     def create_table(self):
         # Create table
         self.tableWidget = QtWidgets.QTableWidget()
+        #self.tableWidget = QtWidgets.QTableView()
         cards = MCCards()
         list_cards = cards.get_all_cards()
         #max_oper = len(list_oper)
         self.tableWidget.setRowCount(len(list_cards))
-        self.tableWidget.setColumnCount(4)
+
+        self.tableWidget.setColumnCount(5)
         for i, item in enumerate(list_cards):
-            self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(list_cards[i][0]))
+            self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(str(list_cards[i][0])))
             self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(list_cards[i][1]))
             self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(list_cards[i][2]))
             self.tableWidget.setItem(i, 3, QtWidgets.QTableWidgetItem(list_cards[i][3]))
+            self.tableWidget.setItem(i, 4, QtWidgets.QTableWidgetItem(list_cards[i][3]))
 
         self.tableWidget.move(0, 0)
         self.tableWidget.doubleClicked.connect(self.on_double_click_table)
@@ -70,28 +73,28 @@ class MCMainWindow(QtWidgets.QMainWindow):
         title = QtWidgets.QLabel('Title')
         author = QtWidgets.QLabel('Author')
         review = QtWidgets.QLabel('Review')
-        titleEdit = QtWidgets.QLineEdit()
-        authorEdit = QtWidgets.QLineEdit()
-        reviewEdit = QtWidgets.QTextEdit()
+        self.titleEdit = QtWidgets.QLineEdit()
+        self.authorEdit = QtWidgets.QLineEdit()
+        self.reviewEdit = QtWidgets.QTextEdit()
         okButton = QtWidgets.QPushButton('Сохранить')
         cancelButton = QtWidgets.QPushButton('Отмена')
 
         if mode == 0:
-            titleEdit.setDisabled(True)
-            authorEdit.setDisabled(True)
-            reviewEdit.setDisabled(True)
+            self.titleEdit.setDisabled(True)
+            self.authorEdit.setDisabled(True)
+            self.reviewEdit.setDisabled(True)
             okButton.setDisabled(True)
 
-        titleEdit.setText('строка 1')
+        self.titleEdit.setText('строка 1')
 
         grid = QtWidgets.QGridLayout()
         grid.setSpacing(10)
         grid.addWidget(title, 1, 0, 1, 1)
-        grid.addWidget(titleEdit, 1, 1, 1, 4)
+        grid.addWidget(self.titleEdit, 1, 1, 1, 4)
         grid.addWidget(author, 2, 0, 1, 1)
-        grid.addWidget(authorEdit, 2, 1, 1, 4)
+        grid.addWidget(self.authorEdit, 2, 1, 1, 4)
         grid.addWidget(review, 3, 0, 1, 1)
-        grid.addWidget(reviewEdit, 3, 1, 5, 4)
+        grid.addWidget(self.reviewEdit, 3, 1, 5, 4)
         grid.addWidget(okButton, 9, 3)
         grid.addWidget(cancelButton, 9, 4)
         self.edit_window.setLayout(grid)
@@ -107,6 +110,10 @@ class MCMainWindow(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot()
     def add_new_card(self):
+        new_card = MCCards()
+        new_card.field1 = self.titleEdit.text()
+        new_card.field2 = self.authorEdit.text()
+        new_card.add_card()
         print('добавить новую карточку')
         self.edit_window.close()
 
