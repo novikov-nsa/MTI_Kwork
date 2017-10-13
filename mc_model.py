@@ -30,5 +30,11 @@ class MCCards:
     def del_card(self, id_card):
         pass
 
-    def update_card(self, id_card):
-        pass
+    def update_card(self,cards_model, index_card, record):
+        for y, column in enumerate(record):
+            cards_model.setItem(index_card, y, QtGui.QStandardItem(str(column)))
+        db = CoreDB()
+        flist = ['f1', 'f2', 'f3', 'f4']
+
+        db.update_item('mc_cards', flist, record, int(record[0]))
+

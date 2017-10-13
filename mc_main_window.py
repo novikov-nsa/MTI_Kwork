@@ -54,22 +54,21 @@ class MCMainWindow(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot()
     def on_double_click_table(self):
-        current_line_value = []
         print("двойной клик")
-        list_fields_card = []
+        self.list_fields_card = []
         index = self.tableWidget.currentIndex()
         data = self.cards_model.data(index, QtCore.Qt.DisplayRole)
-        current_row = index.row()
+        self.current_row = index.row()
         for i in range(0,5):
-            list_fields_card.append(self.cards_model.item(current_row, i).text())
+            self.list_fields_card.append(self.cards_model.item(self.current_row, i).text())
         print(data, index.row(), index.column(), list)
-        self.show_modal_edit_window(1, list_fields_card)
+        self.show_modal_edit_window(1)
 
     @QtCore.pyqtSlot()
     def show_modal_newcard_window(self):
-        self.show_modal_edit_window(2, [])
+        self.show_modal_edit_window(2)
 
-    def show_modal_edit_window(self, mode, list_fields):
+    def show_modal_edit_window(self, mode):
         #mode - Режим открытия окна. 0- просмотр, 1- редактирование, 2- новая запись
 
         global edit_window
@@ -90,9 +89,9 @@ class MCMainWindow(QtWidgets.QMainWindow):
             self.reviewEdit.setDisabled(True)
             okButton.setDisabled(True)
 
-        if len(list_fields) > 0:
-            self.titleEdit.setText(list_fields[1])
-            self.authorEdit.setText(list_fields[2])
+        if len(self.list_fields_card) > 0:
+            self.titleEdit.setText(self.list_fields_card[1])
+            self.authorEdit.setText(self.list_fields_card[2])
 
         grid = QtWidgets.QGridLayout()
         grid.setSpacing(10)
@@ -126,8 +125,11 @@ class MCMainWindow(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot()
     def save_card(self):
-        print('сохранить карточку')
-
+        print('сохранить карточку', self.current_row)
+        self.list_fields_card[1] = self.titleEdit.text()
+        self.list_fields_card[2] = self.authorEdit.text()
+        mccard = MCCards()
+        mccard.update_card(self.cards_model, self.current_row, self.list_fields_card)
         self.edit_window.close()
 
     @QtCore.pyqtSlot()

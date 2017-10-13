@@ -38,11 +38,26 @@ class CoreDB:
 
     def update_item(self, table_name, fields_list, values_list, id_value):
         #обновление записи по ID
-        return
+        max_items = len(fields_list)
+        sql_flist_string = 'set '
+        for i, sitem in enumerate(fields_list):
+            sql_flist_string = sql_flist_string +sitem+' = "'+values_list[i+1]+'" '
+            if i != max_items-1:
+                sql_flist_string = sql_flist_string + ', '
+        sql_update_string = ' UPDATE '+table_name+' '+sql_flist_string+' where ROWID = '+str(id_value)
+        print(sql_update_string)
+        db = self.connect_db()
+        conn = db[0]
+        cur = db[1]
+        cur.execute(sql_update_string)
+        conn.commit()
+        conn.close()
+
+
 
     def select_data(self, sql_string):
-        self.conn = self.connect_db()[0]
-        self.cur = self.connect_db()[1]
-        self.select_result = self.cur.execute(sql_string).fetchall()
-        self.conn.close()
+        conn = self.connect_db()[0]
+        cur = self.connect_db()[1]
+        self.select_result = cur.execute(sql_string).fetchall()
+        conn.close()
         return self.select_result
