@@ -1,27 +1,20 @@
-from PyQt5 import QtWidgets, uic, QtGui
 import sys
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import QApplication, QTableWidget, QMenu, qApp, QTableView
 
-app = QtWidgets.QApplication(sys.argv)
-window = QtWidgets.QWidget()
-model = QtGui.QStandardItemModel()
+app = QApplication([])
+tableWidget = QTableView()
+tableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
 
-for i in range(0, 4):
+def openMenu(position):
 
-    item = QtGui.QStandardItem(str(i))
-    column = QtGui.QStandardItem(str(i) + '2')
+    menu = QMenu()
+    quitAction = menu.addAction("Quit")
+    action = menu.exec_(tableWidget.mapToGlobal(position))
+    if action == quitAction:
+        qApp.quit()
 
-    model.setItem(i,0,item)
-    model.setItem(i,1,column)
-
-    #model.appendColumn([column])
-    #column = QtGui.QStandardItem(str(i) + 'w')
-    #model.insertColumn(1,[column])
-
-tableview = QtWidgets.QTableView()
-tableview.setModel(model)
-layot = QtWidgets.QVBoxLayout()
-layot.addWidget(tableview)
-window.setLayout(layot)
-
-window.show()
+tableWidget.customContextMenuRequested.connect(openMenu)
+tableWidget.show()
 sys.exit(app.exec_())

@@ -27,8 +27,17 @@ class MCCards:
         db.insert_data("mc_cards", fields, data)
 
 
-    def del_card(self, id_card):
-        pass
+    def del_card(self, cards_model, index_card):
+        print("Удалаем ", index_card)
+
+        if index_card < 0:
+            return
+        record = []
+        record.append(cards_model.item(index_card, 0).text())
+
+        cards_model.takeRow(index_card)
+        db = CoreDB()
+        db.delete_item('mc_cards', record[0])
 
     def update_card(self,cards_model, index_card, record):
         for y, column in enumerate(record):

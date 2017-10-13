@@ -1,4 +1,5 @@
-from PyQt5 import QtWidgets, uic, QtCore, Qt
+from PyQt5 import QtWidgets, uic, QtCore
+
 from mc_model import MCCards
 
 class MCMainWindow(QtWidgets.QMainWindow):
@@ -23,6 +24,8 @@ class MCMainWindow(QtWidgets.QMainWindow):
         modal_window.setGeometry(200, 300, 600, 300)
 
         self.create_table()
+
+
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.addWidget(self.tableWidget)
         modal_window.setLayout(self.layout)
@@ -35,22 +38,29 @@ class MCMainWindow(QtWidgets.QMainWindow):
         #self.tableWidget = QtWidgets.QTableWidget()
         self.tableWidget = QtWidgets.QTableView()
         cards = MCCards()
-        #list_cards = cards.get_all_cards()
         self.cards_model = cards.get_all_cards()
         self.tableWidget.setModel(self.cards_model)
-        #max_oper = len(list_oper)
-        #self.tableWidget.setRowCount(len(list_cards))
-
-        #self.tableWidget.setColumnCount(5)
-        #for i, item in enumerate(list_cards):
-        #    self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(str(list_cards[i][0])))
-        #    self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(list_cards[i][1]))
-        #    self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(list_cards[i][2]))
-        #    self.tableWidget.setItem(i, 3, QtWidgets.QTableWidgetItem(list_cards[i][3]))
-        #    self.tableWidget.setItem(i, 4, QtWidgets.QTableWidgetItem(list_cards[i][3]))
-
         self.tableWidget.move(0, 0)
+        self.tableWidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.tableWidget.customContextMenuRequested.connect(self.openMenu)
         self.tableWidget.doubleClicked.connect(self.on_double_click_table)
+
+
+
+    #@QtCore.pyqtSlot()
+    def openMenu(self, position):
+        self.context_menu = QtWidgets.QMenu()
+        self.insert_action = self.context_menu.addAction("Создать")
+        self.edit_action = self.context_menu.addAction("Редактировать")
+        self.delete_action = self.context_menu.addAction("Удалить")
+
+        act = self.context_menu.exec_(self.tableWidget.mapToGlobal(position))
+        if act == self.edit_action:
+            self.on_double_click_table()
+        if act == self.insert_action:
+            self.show_modal_edit_window(2)
+        if act == self.delete_action:
+            self.delete_card()
 
     @QtCore.pyqtSlot()
     def on_double_click_table(self):
@@ -66,6 +76,7 @@ class MCMainWindow(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot()
     def show_modal_newcard_window(self):
+
         self.show_modal_edit_window(2)
 
     def show_modal_edit_window(self, mode):
@@ -89,9 +100,12 @@ class MCMainWindow(QtWidgets.QMainWindow):
             self.reviewEdit.setDisabled(True)
             okButton.setDisabled(True)
 
-        if len(self.list_fields_card) > 0:
-            self.titleEdit.setText(self.list_fields_card[1])
-            self.authorEdit.setText(self.list_fields_card[2])
+        if mode == 1:
+            if len(self.list_fields_card) > 0:
+                self.titleEdit.setText(self.list_fields_card[1])
+                self.authorEdit.setText(self.list_fields_card[2])
+
+
 
         grid = QtWidgets.QGridLayout()
         grid.setSpacing(10)
@@ -136,3 +150,12 @@ class MCMainWindow(QtWidgets.QMainWindow):
     def close_card(self):
         print('отмена')
         self.edit_window.close()
+
+    def delete_card(self):
+        print("удаление карточки")
+        index = self.tableWidget.currentIndex()
+        current_row = index.row()
+        model = MCCards()
+        model.del_card(self.cards_model, current_row)
+
+

@@ -34,7 +34,14 @@ class CoreDB:
 
     def delete_item(self, table_name, id_value):
         # удаление строки по условиям
-        return
+        db = self.connect_db()
+        conn = db[0]
+        cur = db[1]
+        sql_string = 'DELETE from '+table_name+' WHERE ROWID = '+id_value
+        print(sql_string)
+        cur.execute(sql_string)
+        conn.commit()
+        conn.close()
 
     def update_item(self, table_name, fields_list, values_list, id_value):
         #обновление записи по ID
