@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets, uic, QtCore
+from PyQt5 import QtWidgets, uic, QtCore, Qt
 from mc_model import MCCards
 
 class MCMainWindow(QtWidgets.QMainWindow):
@@ -32,20 +32,22 @@ class MCMainWindow(QtWidgets.QMainWindow):
 
     def create_table(self):
         # Create table
-        self.tableWidget = QtWidgets.QTableWidget()
-        #self.tableWidget = QtWidgets.QTableView()
+        #self.tableWidget = QtWidgets.QTableWidget()
+        self.tableWidget = QtWidgets.QTableView()
         cards = MCCards()
-        list_cards = cards.get_all_cards()
+        #list_cards = cards.get_all_cards()
+        self.cards_model = cards.get_all_cards()
+        self.tableWidget.setModel(self.cards_model)
         #max_oper = len(list_oper)
-        self.tableWidget.setRowCount(len(list_cards))
+        #self.tableWidget.setRowCount(len(list_cards))
 
-        self.tableWidget.setColumnCount(5)
-        for i, item in enumerate(list_cards):
-            self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(str(list_cards[i][0])))
-            self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(list_cards[i][1]))
-            self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(list_cards[i][2]))
-            self.tableWidget.setItem(i, 3, QtWidgets.QTableWidgetItem(list_cards[i][3]))
-            self.tableWidget.setItem(i, 4, QtWidgets.QTableWidgetItem(list_cards[i][3]))
+        #self.tableWidget.setColumnCount(5)
+        #for i, item in enumerate(list_cards):
+        #    self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(str(list_cards[i][0])))
+        #    self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(list_cards[i][1]))
+        #    self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(list_cards[i][2]))
+        #    self.tableWidget.setItem(i, 3, QtWidgets.QTableWidgetItem(list_cards[i][3]))
+        #    self.tableWidget.setItem(i, 4, QtWidgets.QTableWidgetItem(list_cards[i][3]))
 
         self.tableWidget.move(0, 0)
         self.tableWidget.doubleClicked.connect(self.on_double_click_table)
@@ -53,18 +55,21 @@ class MCMainWindow(QtWidgets.QMainWindow):
     @QtCore.pyqtSlot()
     def on_double_click_table(self):
         current_line_value = []
-        print("\n")
-        for currentQTableWidgetItem in self.tableWidget.selectedItems():
-            print(currentQTableWidgetItem.row(), currentQTableWidgetItem.column(), currentQTableWidgetItem.text())
-
-        #current_line_value[0] = self.tableWidget.column(self.tableWidget.selectedItems)
-        self.show_modal_edit_window(1)
+        print("двойной клик")
+        list_fields_card = []
+        index = self.tableWidget.currentIndex()
+        data = self.cards_model.data(index, QtCore.Qt.DisplayRole)
+        current_row = index.row()
+        for i in range(0,5):
+            list_fields_card.append(self.cards_model.item(current_row, i).text())
+        print(data, index.row(), index.column(), list)
+        self.show_modal_edit_window(1, list_fields_card)
 
     @QtCore.pyqtSlot()
     def show_modal_newcard_window(self):
-        self.show_modal_edit_window(2)
+        self.show_modal_edit_window(2, [])
 
-    def show_modal_edit_window(self, mode):
+    def show_modal_edit_window(self, mode, list_fields):
         #mode - Режим открытия окна. 0- просмотр, 1- редактирование, 2- новая запись
 
         global edit_window
@@ -85,7 +90,9 @@ class MCMainWindow(QtWidgets.QMainWindow):
             self.reviewEdit.setDisabled(True)
             okButton.setDisabled(True)
 
-        self.titleEdit.setText('строка 1')
+        if len(list_fields) > 0:
+            self.titleEdit.setText(list_fields[1])
+            self.authorEdit.setText(list_fields[2])
 
         grid = QtWidgets.QGridLayout()
         grid.setSpacing(10)
@@ -100,9 +107,9 @@ class MCMainWindow(QtWidgets.QMainWindow):
         self.edit_window.setLayout(grid)
         self.edit_window.setGeometry(200, 300, 600, 300)
         self.edit_window.setWindowTitle('Карточка оборудования')
-        if mode == 2:
+        if mode == 2: #создание новой записи
             okButton.clicked.connect(self.add_new_card)
-        elif mode == 1:
+        elif mode == 1: #сохранение данных в модели и БД
             okButton.clicked.connect(self.save_card)
 
         cancelButton.clicked.connect(self.close_card)
@@ -120,6 +127,7 @@ class MCMainWindow(QtWidgets.QMainWindow):
     @QtCore.pyqtSlot()
     def save_card(self):
         print('сохранить карточку')
+
         self.edit_window.close()
 
     @QtCore.pyqtSlot()

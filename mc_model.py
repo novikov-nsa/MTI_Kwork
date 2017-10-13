@@ -1,4 +1,5 @@
 from core_db import CoreDB
+from PyQt5 import QtGui
 
 class MCCards:
     def __init__(self):
@@ -11,7 +12,12 @@ class MCCards:
         self.sql_string = 'SELECT rowid, f1, f2, f3, f4 FROM mc_cards'
         self.db = CoreDB()
         self.list_cards = self.db.select_data(self.sql_string)
-        return self.list_cards
+        self.cards_model = QtGui.QStandardItemModel()
+        for x, line in enumerate(self.list_cards):
+            for y, column in enumerate(line):
+                self.cards_model.setItem(x, y, QtGui.QStandardItem(str(column)))
+
+        return self.cards_model
 
     def add_card(self):
         print('карточка добавлена', self.field1, self.field2, self.field3, self.field4)
