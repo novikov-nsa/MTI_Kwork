@@ -4,32 +4,38 @@ import sqlite3
 class CoreDB:
     list_fields = {'mc_cards': 'CREATE TABLE mc_cards (f1 text, f2 text, f3 text, f4 text)'}
     def connect_db(self):
-        self.conn = sqlite3.connect("manage_comp.db")
-        self.cur = self.conn.cursor()
+        #Подключение к БД
+        self.conn = sqlite3.connect("manage_comp.db") #Создание подклбчения к БД
+        self.cur = self.conn.cursor() #Создание курсора
         return self.conn, self.cur
 
     def check_tables(self):
-
+        #Проверка наличия требуемых таблиц в БД
         self.list_tables = self.list_fields.keys()
         self._cur = self.connect_db()[1]
 
         for i in self.list_tables:
-            self.s = self._cur.execute("SELECT 1 from SQLITE_MASTER where tbl_name = ?", [i])
-            self.s_result = self.s.fetchall()
+            #проходимся по списку с таблицами и проверяем зарегистрированны ли они в системной таблицу SQLITE_MASTER
+            self.s = self._cur.execute("SELECT 1 from SQLITE_MASTER where tbl_name = ?", [i]) #Выполняем SQL-запрос
+            self.s_result = self.s.fetchall() #Возвращаем рещультат запроса
             if len(self.s_result) == 0:
-                self._cur.execute(self.list_fields[i])
+                self._cur.execute(self.list_fields[i]) #Если количество таблиц 0, то выполняем SQL-запрос
+                                                       # по созданию структур данных.
+                                                       # Текст запроса для каждой таблицы хранится в списке list_fields
         return
 
     def insert_data(self, table_name, fields_list, fields_value_list):
-        '''имя таблицы - строка, передается имя таблицы, в которую будет вставлена запись
+        '''Добавление строки в таблицу
+        имя таблицы - строка, передается имя таблицы, в которую будет вставлена запись
         список полей- строка, передается строка со списков полей в виде "поле1, поле2, поле3"
         список значение- строка передается список значений в виде 'значение 1', 'значение 2', 'значение 3' '''
         self.conn = self.connect_db()[0]
         self.cur = self.connect_db()[1]
+        #Компонуется строка SQL-запроса
         self.result_comand = """INSERT INTO """+table_name+""" ("""+fields_list+""") VALUES ("""+fields_value_list+""")"""
-        self.cur.execute(self.result_comand)
-        self.conn.commit()
-        self.conn.close()
+        self.cur.execute(self.result_comand) #Выполняется SQL-запрос
+        self.conn.commit() #Производится коммит
+        self.conn.close() #Закрывается соединение
         return
 
     def delete_item(self, table_name, id_value):
@@ -60,9 +66,9 @@ class CoreDB:
         conn.commit()
         conn.close()
 
-
-
     def select_data(self, sql_string):
+        '''Выбор данных из таблицы
+        sql_string - текст SQL-запроса'''
         conn = self.connect_db()[0]
         cur = self.connect_db()[1]
         self.select_result = cur.execute(sql_string).fetchall()
