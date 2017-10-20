@@ -2,7 +2,8 @@
 import sqlite3
 
 class CoreDB:
-    list_fields = {'mc_cards': 'CREATE TABLE mc_cards (f1 text, f2 text, f3 text, f4 text)'}
+    list_fields = {'mc_cards': 'CREATE TABLE mc_cards (equipmentName text, equipmentType text, orgName text, quantity number, comment text)'}
+
     def connect_db(self):
         #Подключение к БД
         self.conn = sqlite3.connect("manage_comp.db") #Создание подклбчения к БД
@@ -22,7 +23,7 @@ class CoreDB:
                 self._cur.execute(self.list_fields[i]) #Если количество таблиц 0, то выполняем SQL-запрос
                                                        # по созданию структур данных.
                                                        # Текст запроса для каждой таблицы хранится в списке list_fields
-        return
+
 
     def insert_data(self, table_name, fields_list, fields_value_list):
         '''Добавление строки в таблицу
@@ -36,7 +37,6 @@ class CoreDB:
         self.cur.execute(self.result_comand) #Выполняется SQL-запрос
         self.conn.commit() #Производится коммит
         self.conn.close() #Закрывается соединение
-        return
 
     def delete_item(self, table_name, id_value):
         # удаление строки по условиям

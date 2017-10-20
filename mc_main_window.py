@@ -81,42 +81,54 @@ class MCMainWindow(QtWidgets.QMainWindow):
 
     def show_modal_edit_window(self, mode):
         #mode - Режим открытия окна. 0- просмотр, 1- редактирование, 2- новая запись
-
         global edit_window
         self.edit_window = QtWidgets.QWidget(self, QtCore.Qt.Window)
         self.edit_window.setWindowModality(QtCore.Qt.WindowModal)
-        title = QtWidgets.QLabel('Title')
-        author = QtWidgets.QLabel('Author')
-        review = QtWidgets.QLabel('Review')
-        self.titleEdit = QtWidgets.QLineEdit()
-        self.authorEdit = QtWidgets.QLineEdit()
-        self.reviewEdit = QtWidgets.QTextEdit()
+        equipmentNameLabel = QtWidgets.QLabel('Оборудование')
+        equipmentTypelabel = QtWidgets.QLabel('Тип оборудования')
+        orgNameLabel = QtWidgets.QLabel('Организация')
+        quantityLabel = QtWidgets.QLabel('Количество')
+        commentLabel = QtWidgets.QLabel('Комментарий')
+        self.equipmentNameEdit = QtWidgets.QLineEdit()
+        self.equipmentTypeEdit = QtWidgets.QLineEdit()
+        self.orgNameEdit = QtWidgets.QLineEdit()
+        self.quantityEdit = QtWidgets.QLineEdit()
+        self.commentEdit = QtWidgets.QTextEdit()
+
         okButton = QtWidgets.QPushButton('Сохранить')
         cancelButton = QtWidgets.QPushButton('Отмена')
 
         if mode == 0:
-            self.titleEdit.setDisabled(True)
-            self.authorEdit.setDisabled(True)
-            self.reviewEdit.setDisabled(True)
+            self.equipmentNameEdit.setDisabled(True)
+            self.equipmentTypeEdit.setDisabled(True)
+            self.orgNameEdit.setDisabled(True)
+            self.quantityEdit.setDisabled(True)
+            self.commentEdit.setDisabled(True)
             okButton.setDisabled(True)
 
         if mode == 1:
             if len(self.list_fields_card) > 0:
-                self.titleEdit.setText(self.list_fields_card[1])
-                self.authorEdit.setText(self.list_fields_card[2])
-
-
+                self.equipmentNameEdit.setText(self.list_fields_card[1])
+                self.equipmentTypeEdit.setText(self.list_fields_card[2])
+                self.orgNameEdit.setText(self.list_fields_card[3])
+                self.quantityEdit.setText(self.list_fields_card[4])
+                self.commentEdit.setText(self.list_fields_card[5])
 
         grid = QtWidgets.QGridLayout()
         grid.setSpacing(10)
-        grid.addWidget(title, 1, 0, 1, 1)
-        grid.addWidget(self.titleEdit, 1, 1, 1, 4)
-        grid.addWidget(author, 2, 0, 1, 1)
-        grid.addWidget(self.authorEdit, 2, 1, 1, 4)
-        grid.addWidget(review, 3, 0, 1, 1)
-        grid.addWidget(self.reviewEdit, 3, 1, 5, 4)
-        grid.addWidget(okButton, 9, 3)
-        grid.addWidget(cancelButton, 9, 4)
+        grid.addWidget(equipmentNameLabel, 1, 0, 1, 1)
+        grid.addWidget(self.equipmentNameEdit, 1, 1, 1, 4)
+        grid.addWidget(equipmentTypelabel, 2, 0, 1, 1)
+        grid.addWidget(self.equipmentTypeEdit, 2, 1, 1, 4)
+        grid.addWidget(orgNameLabel, 3, 0, 1, 1)
+        grid.addWidget(self.orgNameEdit, 3, 1, 1, 4)
+        grid.addWidget(quantityLabel, 4, 0, 1, 1)
+        grid.addWidget(self.quantityEdit, 4, 1, 1, 4)
+        grid.addWidget(commentLabel, 5, 0, 1, 1)
+        grid.addWidget(self.commentEdit, 5, 1, 3, 4)
+
+        grid.addWidget(okButton, 11, 3)
+        grid.addWidget(cancelButton, 11, 4)
         self.edit_window.setLayout(grid)
         self.edit_window.setGeometry(200, 300, 600, 300)
         self.edit_window.setWindowTitle('Карточка оборудования')
@@ -131,8 +143,11 @@ class MCMainWindow(QtWidgets.QMainWindow):
     @QtCore.pyqtSlot()
     def add_new_card(self):
         new_card = MCCards()
-        new_card.field1 = self.titleEdit.text()
-        new_card.field2 = self.authorEdit.text()
+        new_card.equipmentName = self.equipmentNameEdit.text()
+        new_card.equipmentType = self.equipmentTypeEdit.text()
+        new_card.orgName = self.orgNameEdit.text()
+        new_card.quantity = int(self.quantityEdit.text())
+        #new_card.comment = self.commentEdit.
         new_card.add_card()
         print('добавить новую карточку')
         self.edit_window.close()

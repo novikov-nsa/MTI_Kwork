@@ -3,13 +3,16 @@ from PyQt5 import QtGui
 
 class MCCards:
     def __init__(self):
-        self.field1 = ''
-        self.field2 = ''
-        self.field3 = ''
-        self.field4 = ''
+        self.equipmentName = ''     #Наименование оборудования
+        self.equipmentType = ''     #Тип оборудования
+        self.orgName = ''           #Наименование организации
+        self.quantity = 0           #Количество
+        self.comment = ''           #Комментарий
+        self.flist = ['equipmentName', 'equipmentType', 'orgName', 'quantity', 'comment']
+        self.fields = "equipmentName, equipmentType, orgName, quantity, comment"
 
     def get_all_cards(self):
-        self.sql_string = 'SELECT rowid, f1, f2, f3, f4 FROM mc_cards'
+        self.sql_string = 'SELECT rowid, equipmentName, equipmentType, orgName, quantity, comment FROM mc_cards'
         self.db = CoreDB()
         self.list_cards = self.db.select_data(self.sql_string)
         self.cards_model = QtGui.QStandardItemModel()
@@ -20,11 +23,10 @@ class MCCards:
         return self.cards_model
 
     def add_card(self):
-        print('карточка добавлена', self.field1, self.field2, self.field3, self.field4)
-        fields = "f1, f2, f3, f4"
-        data = '"'+self.field1+'", "'+ self.field2+'", "'+ self.field3+'", "'+ self.field4+'"'
+
+        data = '"'+self.equipmentName+'", "'+ self.equipmentType+'", "'+ self.orgName+'", "'+ str(self.quantity)+'", "'+self.comment+'"'
         db = CoreDB()
-        db.insert_data("mc_cards", fields, data)
+        db.insert_data("mc_cards", self.fields, data)
 
 
     def del_card(self, cards_model, index_card):
@@ -43,7 +45,5 @@ class MCCards:
         for y, column in enumerate(record):
             cards_model.setItem(index_card, y, QtGui.QStandardItem(str(column)))
         db = CoreDB()
-        flist = ['f1', 'f2', 'f3', 'f4']
-
-        db.update_item('mc_cards', flist, record, int(record[0]))
+        db.update_item('mc_cards', self.flist, record, int(record[0]))
 
