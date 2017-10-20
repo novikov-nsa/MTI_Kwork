@@ -2,7 +2,7 @@
 import sqlite3
 
 class CoreDB:
-    list_fields = {'mc_cards': 'CREATE TABLE mc_cards (equipmentName text, equipmentType text, orgName text, quantity number, comment text)'}
+    list_fields = {'mc_cards': 'CREATE TABLE mc_cards (equipmentName text, equipmentType text, orgName text, quantity number, commentCard text)'}
 
     def connect_db(self):
         #Подключение к БД

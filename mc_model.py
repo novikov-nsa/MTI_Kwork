@@ -7,15 +7,17 @@ class MCCards:
         self.equipmentType = ''     #Тип оборудования
         self.orgName = ''           #Наименование организации
         self.quantity = 0           #Количество
-        self.comment = ''           #Комментарий
-        self.flist = ['equipmentName', 'equipmentType', 'orgName', 'quantity', 'comment']
-        self.fields = "equipmentName, equipmentType, orgName, quantity, comment"
+        self. commentCard= ''       #Комментарий
+        self.flist = ['equipmentName', 'equipmentType', 'orgName', 'quantity', 'commentCard']
+        self.fields = "equipmentName, equipmentType, orgName, quantity, commentCard"
 
     def get_all_cards(self):
-        self.sql_string = 'SELECT rowid, equipmentName, equipmentType, orgName, quantity, comment FROM mc_cards'
+        self.sql_string = 'SELECT rowid, equipmentName, equipmentType, orgName, quantity, commentCard FROM mc_cards'
         self.db = CoreDB()
         self.list_cards = self.db.select_data(self.sql_string)
         self.cards_model = QtGui.QStandardItemModel()
+        self.cards_model.setHorizontalHeaderLabels(['Номер', 'Оборудование', 'Тип оборудования', 'Организация',\
+                                                    'Количество', 'Комментарий'])
         for x, line in enumerate(self.list_cards):
             for y, column in enumerate(line):
                 self.cards_model.setItem(x, y, QtGui.QStandardItem(str(column)))
@@ -24,7 +26,7 @@ class MCCards:
 
     def add_card(self):
 
-        data = '"'+self.equipmentName+'", "'+ self.equipmentType+'", "'+ self.orgName+'", "'+ str(self.quantity)+'", "'+self.comment+'"'
+        data = '"'+self.equipmentName+'", "'+ self.equipmentType+'", "'+ self.orgName+'", "'+ str(self.quantity)+'", "'+self.commentCard+'"'
         db = CoreDB()
         db.insert_data("mc_cards", self.fields, data)
 
