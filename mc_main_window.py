@@ -3,12 +3,15 @@ from PyQt5 import QtWidgets, uic, QtCore
 from mc_model import MCCards
 
 class MCMainWindow(QtWidgets.QMainWindow):
+    #окна для отображения интерфейса пользователя
     def __init__(self, parent=None):
         super().__init__()
         self.mainwindow  = QtWidgets.QWidget.__init__(self, parent)
+        #Интерфейс описан с помощью редактора визуальных форм.
+        #Происходит загрузка интерфейса главного окна из XML-файла
         self.mainwindow = uic.loadUi("qml_forms/main.ui", self)
         self.desktop = QtWidgets.QApplication.desktop()
-        self.center()
+        self.center() #Выставили окно по центру
         self.mainwindow.list_cards.triggered.connect(self.show_modal_window)
         self.mainwindow.new_card.triggered.connect(self.show_modal_newcard_window)
         self.mainwindow.exit.triggered.connect(self.close_app)
@@ -22,9 +25,9 @@ class MCMainWindow(QtWidgets.QMainWindow):
 
     def show_modal_window(self):
         global modal_window
-        modal_window = QtWidgets.QWidget(self, QtCore.Qt.Window)
-        modal_window.setWindowModality(QtCore.Qt.WindowModal)
-        modal_window.setWindowTitle('Список оборудования')
+        self.modal_window = QtWidgets.QWidget(self, QtCore.Qt.Window)
+        self.modal_window.setWindowModality(QtCore.Qt.WindowModal)
+        self.modal_window.setWindowTitle('Список оборудования')
         rect = self.mainwindow.geometry()
         x = rect.left()
         y = rect.top()
@@ -35,18 +38,17 @@ class MCMainWindow(QtWidgets.QMainWindow):
             w = 600
         if h < 400:
             h = 400
-        modal_window.setGeometry(x, y, w, h)
+        self.modal_window.setGeometry(x, y, w, h)
         self.create_table()
 
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.addWidget(self.tableWidget)
-        modal_window.setLayout(self.layout)
-        modal_window.move(x+5, y+50)
-        modal_window.show()
+        self.modal_window.setLayout(self.layout)
+        self.modal_window.move(x+5, y+50)
+        self.modal_window.show()
 
     def create_table(self):
-        # Create table
-        #self.tableWidget = QtWidgets.QTableWidget()
+        # Создает представление таблицы с данными
         default_col_width = [70, 300, 100, 300, 100, 500]
         self.tableWidget = QtWidgets.QTableView()
         cards = MCCards()
@@ -55,6 +57,7 @@ class MCMainWindow(QtWidgets.QMainWindow):
         for i, item in enumerate(default_col_width):
             self.tableWidget.setColumnWidth(i, item)
 
+        self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tableWidget.move(0, 0)
         self.tableWidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.tableWidget.customContextMenuRequested.connect(self.openMenu)
@@ -79,14 +82,12 @@ class MCMainWindow(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot()
     def on_double_click_table(self):
-        print("двойной клик")
         self.list_fields_card = []
         index = self.tableWidget.currentIndex()
         data = self.cards_model.data(index, QtCore.Qt.DisplayRole)
         self.current_row = index.row()
         for i in range(0,6):
             self.list_fields_card.append(self.cards_model.item(self.current_row, i).text())
-        print(data, index.row(), index.column(), list)
         self.show_modal_edit_window(1)
 
     @QtCore.pyqtSlot()
@@ -107,9 +108,12 @@ class MCMainWindow(QtWidgets.QMainWindow):
         self.equipmentNameEdit = QtWidgets.QLineEdit()
         self.equipmentTypeEdit = QtWidgets.QLineEdit()
         self.orgNameEdit = QtWidgets.QLineEdit()
-        self.quantityEdit = QtWidgets.QLineEdit()
+        self.quantityEdit = QtWidgets.QSpinBox()
         self.commentCardEdit = QtWidgets.QTextEdit()
 
+        self.quantityEdit.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
+        self.quantityEdit.setRange(1, 10000)
+        self.quantityEdit.setAlignment(QtCore.Qt.AlignRight)
         okButton = QtWidgets.QPushButton('Сохранить')
         cancelButton = QtWidgets.QPushButton('Отмена')
 
@@ -126,7 +130,7 @@ class MCMainWindow(QtWidgets.QMainWindow):
                 self.equipmentNameEdit.setText(self.list_fields_card[1])
                 self.equipmentTypeEdit.setText(self.list_fields_card[2])
                 self.orgNameEdit.setText(self.list_fields_card[3])
-                self.quantityEdit.setText(self.list_fields_card[4])
+                self.quantityEdit.setValue(int(self.list_fields_card[4]))
                 self.commentCardEdit.setText(self.list_fields_card[5])
 
 
@@ -139,14 +143,23 @@ class MCMainWindow(QtWidgets.QMainWindow):
         grid.addWidget(orgNameLabel, 3, 0, 1, 1)
         grid.addWidget(self.orgNameEdit, 3, 1, 1, 4)
         grid.addWidget(quantityLabel, 4, 0, 1, 1)
-        grid.addWidget(self.quantityEdit, 4, 1, 1, 4)
+        grid.addWidget(self.quantityEdit, 4, 1, 1, 1)
         grid.addWidget(commentCardLabel, 5, 0, 1, 1)
         grid.addWidget(self.commentCardEdit, 5, 1, 3, 4)
 
         grid.addWidget(okButton, 11, 3)
         grid.addWidget(cancelButton, 11, 4)
         self.edit_window.setLayout(grid)
-        self.edit_window.setGeometry(200, 300, 600, 300)
+        #
+        rect1 = self.modal_window.geometry()
+        x1 = rect1.left()+20
+        y1 = rect1.top()+40
+        w1 = rect1.width() - 40
+        h1 = 300
+        if w1 <600:
+            w1 = 600
+
+        self.edit_window.setGeometry(x1, y1, w1, h1)
         self.edit_window.setWindowTitle('Карточка оборудования')
         if mode == 2: #создание новой записи
             okButton.clicked.connect(self.add_new_card)
@@ -157,22 +170,20 @@ class MCMainWindow(QtWidgets.QMainWindow):
         self.edit_window.show()
 
     @QtCore.pyqtSlot()
-    def add_new_card(self):
-        new_card = MCCards()
+    def add_new_card(self): #Добавление новой карточки
+        new_card = MCCards() #Создается объект класса MCCards
+        #Присваиваются значения с полей формы редактирования атрибутам модели данных
         new_card.equipmentName = self.equipmentNameEdit.text()
         new_card.equipmentType = self.equipmentTypeEdit.text()
         new_card.orgName = self.orgNameEdit.text()
         new_card.quantity = int(self.quantityEdit.text())
         new_card.commentCard = self.commentCardEdit.toPlainText()
-        
-        #new_card.comment = self.commentEdit.
-        new_card.add_card()
-        print('добавить новую карточку')
+
+        new_card.add_card() #Метод добавления данных в модель
         self.edit_window.close()
 
     @QtCore.pyqtSlot()
-    def save_card(self):
-        print('сохранить карточку', self.current_row)
+    def save_card(self): #Сохранение данных карточки
         self.list_fields_card[1] = self.equipmentNameEdit.text()
         self.list_fields_card[2] = self.equipmentTypeEdit.text()
         self.list_fields_card[3] = self.orgNameEdit.text()
@@ -184,18 +195,15 @@ class MCMainWindow(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot()
     def close_card(self):
-        print('отмена')
         self.edit_window.close()
 
-    def delete_card(self):
-        print("удаление карточки")
+    def delete_card(self): #Удаление карточки
         index = self.tableWidget.currentIndex()
         current_row = index.row()
         model = MCCards()
         model.del_card(self.cards_model, current_row)
 
-    def center(self):
-
+    def center(self): #Установить главное окно по цетру
         qr = self.frameGeometry()
         cp = QtWidgets.QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)

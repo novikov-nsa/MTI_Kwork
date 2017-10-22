@@ -13,9 +13,3 @@ if __name__ == '__main__':
     window = MCMainWindow()
     window.show()
     sys.exit(app.exec_())
-
-
-
-#db.insert_data('mc_operation', 'f1, f2', '"oper 4", 45786')
-#db.cur.close()
-#db.conn.close()

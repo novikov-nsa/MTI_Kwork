@@ -39,12 +39,11 @@ class CoreDB:
         self.conn.close() #Закрывается соединение
 
     def delete_item(self, table_name, id_value):
-        # удаление строки по условиям
+        # удаление строки по ID
         db = self.connect_db()
         conn = db[0]
         cur = db[1]
         sql_string = 'DELETE from '+table_name+' WHERE ROWID = '+id_value
-        print(sql_string)
         cur.execute(sql_string)
         conn.commit()
         conn.close()
@@ -58,7 +57,6 @@ class CoreDB:
             if i != max_items-1:
                 sql_flist_string = sql_flist_string + ', '
         sql_update_string = ' UPDATE '+table_name+' '+sql_flist_string+' where ROWID = '+str(id_value)
-        print(sql_update_string)
         db = self.connect_db()
         conn = db[0]
         cur = db[1]
