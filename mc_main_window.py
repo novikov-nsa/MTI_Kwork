@@ -11,7 +11,20 @@ class MCMainWindow(QtWidgets.QMainWindow):
         #Происходит загрузка интерфейса главного окна из XML-файла
         self.mainwindow = uic.loadUi("qml_forms/main.ui", self)
         self.desktop = QtWidgets.QApplication.desktop()
-        self.center() #Выставили окно по центру
+
+        print(self.desktop.width(), self.desktop.height())
+        x = 20
+        y = 60
+        w = self.desktop.width() - 40
+        h = self.desktop.height() - 200
+
+        if w < 600:
+            w = 600
+        if h < 300:
+            h = 300
+        self.mainwindow.setGeometry(x, y, w, h)
+
+        #self.center() #Выставили окно по центру
         self.mainwindow.list_cards.triggered.connect(self.show_modal_window)
         self.mainwindow.new_card.triggered.connect(self.show_modal_newcard_window)
         self.mainwindow.exit.triggered.connect(self.close_app)
@@ -36,8 +49,8 @@ class MCMainWindow(QtWidgets.QMainWindow):
 
         if w <600:
             w = 600
-        if h < 400:
-            h = 400
+        if h < 300:
+            h = 300
         self.modal_window.setGeometry(x, y, w, h)
         self.create_table()
 
@@ -63,9 +76,6 @@ class MCMainWindow(QtWidgets.QMainWindow):
         self.tableWidget.customContextMenuRequested.connect(self.openMenu)
         self.tableWidget.doubleClicked.connect(self.on_double_click_table)
 
-
-
-    #@QtCore.pyqtSlot()
     def openMenu(self, position):
         self.context_menu = QtWidgets.QMenu()
         self.insert_action = self.context_menu.addAction("Создать")
@@ -132,7 +142,6 @@ class MCMainWindow(QtWidgets.QMainWindow):
                 self.orgNameEdit.setText(self.list_fields_card[3])
                 self.quantityEdit.setValue(int(self.list_fields_card[4]))
                 self.commentCardEdit.setText(self.list_fields_card[5])
-
 
         grid = QtWidgets.QGridLayout()
         grid.setSpacing(10)
